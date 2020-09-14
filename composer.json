@@ -1,0 +1,28 @@
+{
+  "name": "dhonnabhain/tikteauk",
+  "description": "MMI Dijon project starter",
+  "type": "library",
+  "license": "MIT",
+  "authors": [
+    {
+      "name": "Donovan Broquin",
+      "email": "dbroquin@deliverup.com"
+    }
+  ],
+  "require": {
+    "vlucas/phpdotenv": "^5.1",
+    "symfony/var-dumper": "^5.1",
+    "filp/whoops": "^2.7",
+    "league/route": "^4.5",
+    "laminas/laminas-diactoros": "^2.4",
+    "laminas/laminas-httphandlerrunner": "^1.2"
+  },
+  "autoload": {
+    "psr-4": {
+      "App\\": "app/"
+    },
+    "files": [
+      "app/Helpers/App.php"
+    ]
+  }
+}
