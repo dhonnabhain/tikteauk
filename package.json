@@ -1,0 +1,26 @@
+{
+  "name": "tikteauk",
+  "version": "1.0.0",
+  "description": "MMI Dijon project",
+  "main": "index.js",
+  "repository": "git@github.com:dhonnabhain/tikteauk.git",
+  "author": "Donovan Broquin <donovan.broquin@outlook.com>",
+  "license": "MIT",
+  "private": true,
+  "scripts": {
+    "dev": "cross-env NODE_ENV=development node_modules/webpack/bin/webpack.js --progress --hide-modules --config=node_modules/laravel-mix/setup/webpack.config.js",
+    "watch": "npm run dev -- --watch",
+    "prod": "cross-env NODE_ENV=production node_modules/webpack/bin/webpack.js --no-progress --hide-modules --config=node_modules/laravel-mix/setup/webpack.config.js"
+  },
+  "dependencies": {
+    "@tailwindcss/ui": "^0.6.1",
+    "cross-env": "^7.0.2",
+    "tailwindcss": "^1.8.10",
+    "vue": "^2.6.12"
+  },
+  "devDependencies": {
+    "laravel-mix": "^5.0.5",
+    "resolve-url-loader": "^3.1.1",
+    "vue-template-compiler": "^2.6.12"
+  }
+}

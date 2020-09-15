@@ -1,12 +1,12 @@
 {
   "name": "dhonnabhain/tikteauk",
-  "description": "MMI Dijon project starter",
+  "description": "MMI Dijon project",
   "type": "library",
   "license": "MIT",
   "authors": [
     {
       "name": "Donovan Broquin",
-      "email": "dbroquin@deliverup.com"
+      "email": "donovan.broquin@outlook.com"
     }
   ],
   "require": {
