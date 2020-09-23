@@ -186,3 +186,18 @@
     </div>
   </nav>
 </template>
+
+<script>
+import posts from '../api/posts'
+
+export default {
+  created() {
+    this.fetch()
+  },
+  methods: {
+    async fetch() {
+      await posts.fetchAll()
+    },
+  },
+}
+</script>

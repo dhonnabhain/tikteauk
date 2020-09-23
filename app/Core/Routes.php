@@ -1,7 +1,7 @@
 <?php
 
-use App\Controllers\ErrorController;
 use App\Controllers\LandingController;
+use App\Controllers\PostController;
 
 return [
     [
@@ -9,5 +9,11 @@ return [
         'path' => '/',
         'controller' => LandingController::class,
         'method' => 'landing',
+    ],
+    [
+        'verb' => 'get',
+        'path' => '/posts/all',
+        'controller' => PostController::class,
+        'method' => 'index',
     ]
 ];

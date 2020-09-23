@@ -23,6 +23,14 @@ class Controller
         return $this->responseView($rendered);
     }
 
+    public function json($result): Response
+    {
+        $response = new \Laminas\Diactoros\Response;
+        $response->getBody()->write(json_encode($result));
+
+        return $response;
+    }
+
     private function responseView(string $rendered): Response
     {
         $response = new \Laminas\Diactoros\Response;
