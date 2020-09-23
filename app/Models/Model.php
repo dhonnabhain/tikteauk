@@ -11,7 +11,7 @@ abstract class Model
 
     public function __construct()
     {
-        $this->extractTableName();
+        $this->resolveTable();
     }
 
     public function all()
@@ -22,7 +22,7 @@ abstract class Model
         return $query->fetchAll(PDO::FETCH_ASSOC);
     }
 
-    private function extractTableName(): void
+    private function resolveTable(): void
     {
         $namespace = get_class($this);
         $classname = array_reverse(explode('\\', $namespace))[0];
