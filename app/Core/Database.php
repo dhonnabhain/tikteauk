@@ -11,7 +11,7 @@ class Database
         $this->buildConnection();
     }
 
-    private function buildConnection()
+    private function buildConnection(): void
     {
         global $connection;
 
