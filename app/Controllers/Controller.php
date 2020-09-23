@@ -20,18 +20,20 @@ class Controller
 
         ob_end_clean();
 
-        return $this->responseView($rendered);
+        return $this->response($rendered);
     }
 
     public function json($result): Response
     {
-        $response = new \Laminas\Diactoros\Response;
-        $response->getBody()->write(json_encode($result));
-
-        return $response;
+        return $this->response(json_encode($result));
     }
 
-    private function responseView(string $rendered): Response
+    public function redirect(string $url)
+    {
+        return new \Laminas\Diactoros\Response\RedirectResponse($url);
+    }
+
+    private function response(string $rendered): Response
     {
         $response = new \Laminas\Diactoros\Response;
         $response->getBody()->write($rendered);
