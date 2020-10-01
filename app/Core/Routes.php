@@ -1,6 +1,7 @@
 <?php
 
 use App\Controllers\AuthController;
+use App\Controllers\HomeController;
 use App\Controllers\LandingController;
 use App\Controllers\PostController;
 
@@ -31,7 +32,7 @@ return [
     ],
     [
         'verb' => 'post',
-        'path' => '/',
+        'path' => '/logout',
         'controller' => AuthController::class,
         'method' => 'logout',
     ],
@@ -40,6 +41,12 @@ return [
         'path' => '/',
         'controller' => LandingController::class,
         'method' => 'landing',
+    ],
+    [
+        'verb' => 'get',
+        'path' => '/home',
+        'controller' => HomeController::class,
+        'method' => 'home',
     ],
     [
         'verb' => 'get',

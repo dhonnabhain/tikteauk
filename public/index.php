@@ -1,5 +1,6 @@
 <?php
 
+use App\Controllers\HomeController;
 use App\Core\Database;
 use App\Core\Env;
 use App\Core\Router;
@@ -13,3 +14,5 @@ new Env;
 new Whoops;
 new Database;
 new Router;
+
+// dump((new HomeController)->home());

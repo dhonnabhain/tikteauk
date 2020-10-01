@@ -4,6 +4,11 @@
 <body>
     <main id="app">
         <l-public message="Rejoindre Tikteauk">
+
+            <?php if (isset($params['message'])) {
+                include(__DIR__ . '/../../components/auth/register/alreadyExistsAlert.php');
+            } ?>
+
             <form action="/register" method="POST" class="space-y-6">
                 <div>
                     <label for="first_name" class="block text-sm font-medium leading-5 text-gray-700">Prénom</label>

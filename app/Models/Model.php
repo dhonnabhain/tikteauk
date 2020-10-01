@@ -11,6 +11,7 @@ abstract class Model
     private string $query;
     private array $columns = [];
     private array $binds = [];
+    private array $wheres = [];
 
     public function __construct()
     {
@@ -21,9 +22,17 @@ abstract class Model
     {
         $this->query = "INSERT INTO $this->table (%columns%) VALUES (%binds%)";
 
-        return $this->prepareColumnsAndBinds($fields)
-            ->setColumnsAndBinds()
-            ->run($fields);
+        try {
+            $exec = $this->prepareColumnsAndBinds($fields)
+                ->setColumnsAndBinds()
+                ->run($fields);
+
+            $this->cleanup();
+
+            return $exec;
+        } catch (\Exception $e) {
+            return $e;
+        }
     }
 
     public function all()
@@ -32,6 +41,48 @@ abstract class Model
         $query->execute();
 
         return $query->fetchAll(PDO::FETCH_ASSOC);
+    }
+
+    public function fetch(): array
+    {
+        $whereClause = $this->prepareWhere();
+        $query = $GLOBALS['connection']->prepare("SELECT * FROM $this->table " . $whereClause);
+        $query->execute();
+
+        return $query->fetchAll(PDO::FETCH_ASSOC);
+    }
+
+    public function first(): self
+    {
+        $fetched = $this->fetch();
+
+        if (count($fetched) > 0) {
+            foreach ($fetched[0] as $attr => $item) {
+                $this->{$attr} = $item;
+            }
+        }
+
+        return $this;
+    }
+
+    public function where(array $condition): self
+    {
+        array_push($this->wheres, $condition);
+
+        return $this;
+    }
+
+    public function prepareWhere(): ?string
+    {
+        if (count($this->wheres) > 0) {
+            $whereClause = "WHERE ";
+
+            foreach ($this->wheres as $where) {
+                $whereClause .= "$where[0] = '$where[1]'";
+            }
+
+            return $whereClause;
+        }
     }
 
     private function resolveTable(): void
@@ -69,5 +120,10 @@ abstract class Model
         }
 
         return $stmt->execute();
+    }
+
+    private function cleanup(): void
+    {
+        $this->wheres = $this->binds = $this->columns = [];
     }
 }
