@@ -10,16 +10,12 @@
             src="https://tailwindui.com/img/logos/workflow-mark-on-white.svg"
             alt="Workflow"
           />
-          <h2 class="mt-6 text-3xl leading-9 font-extrabold text-gray-900">Sign in to your account</h2>
+          <h2 class="mt-6 text-3xl leading-9 font-extrabold text-gray-900">
+            {{ message }}
+          </h2>
         </div>
 
         <div class="mt-8">
-          <div>
-            <div>
-              <p class="text-sm leading-5 font-medium text-gray-700">{{ message }}</p>
-            </div>
-          </div>
-
           <div class="mt-6">
             <slot />
           </div>
@@ -35,3 +31,14 @@
     </div>
   </div>
 </template>
+
+<script>
+export default {
+  props: {
+    message: {
+      type: String,
+      required: true,
+    },
+  },
+}
+</script>

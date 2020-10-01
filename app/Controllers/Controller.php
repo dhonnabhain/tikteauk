@@ -3,10 +3,16 @@
 namespace App\Controllers;
 
 use Laminas\Diactoros\Response;
+use Psr\Http\Message\ServerRequestInterface;
 
 class Controller
 {
     protected $rendered;
+
+    protected function getBody(ServerRequestInterface $request): ?array
+    {
+        return $request->getParsedBody();
+    }
 
     protected function render(string $view, $parameters = null): Response
     {

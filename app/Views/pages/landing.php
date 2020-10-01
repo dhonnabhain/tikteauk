@@ -1,12 +1,20 @@
 <html>
 <?php include(__DIR__ . '/../components/header.php') ?>
 
-<body>
-    <main id="app">
-        <l-header>
-        </l-header>
-        <p-landing>
-        </p-landing>
+<body class="bg-gray-300">
+    <main id="app" class="h-screen w-screen">
+        <div class="w-full bg-white p-4 flex justify-between">
+            Tikteauk
+            <a href="/login" class="text-indigo-500">Se connecter</a>
+        </div>
+
+        
+        <!-- <l-header>
+        </l-header> -->
+        <!-- <p-landing>
+        </p-landing> -->
+
+
     </main>
 
     <script src="js/app.js"></script>
