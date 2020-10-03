@@ -56,11 +56,7 @@ abstract class Model
     {
         $fetched = $this->fetch();
 
-        if (count($fetched) > 0) {
-            foreach ($fetched[0] as $attr => $item) {
-                $this->{$attr} = $item;
-            }
-        }
+        $this->populate($fetched);
 
         return $this;
     }
@@ -125,5 +121,14 @@ abstract class Model
     private function cleanup(): void
     {
         $this->wheres = $this->binds = $this->columns = [];
+    }
+
+    private function populate(array $fetched = []): void
+    {
+        if (count($fetched) > 0) {
+            foreach ($fetched[0] as $attr => $item) {
+                $this->{$attr} = $item;
+            }
+        }
     }
 }

@@ -6,6 +6,7 @@ use App\Controllers\LandingController;
 use App\Controllers\PostController;
 
 return [
+    # Auth
     [
         'verb' => 'post',
         'path' => '/register',
@@ -31,27 +32,37 @@ return [
         'method' => 'showLoginForm',
     ],
     [
-        'verb' => 'post',
+        'verb' => 'get',
         'path' => '/logout',
         'controller' => AuthController::class,
         'method' => 'logout',
     ],
-    [
-        'verb' => 'get',
-        'path' => '/',
-        'controller' => LandingController::class,
-        'method' => 'landing',
-    ],
+
+    # Content
     [
         'verb' => 'get',
         'path' => '/home',
         'controller' => HomeController::class,
-        'method' => 'home',
+        'method' => 'show',
+    ],
+    [
+        'verb' => 'get',
+        'path' => '/profil',
+        'controller' => HomeController::class,
+        'method' => 'show',
     ],
     [
         'verb' => 'get',
         'path' => '/posts/all',
         'controller' => PostController::class,
         'method' => 'index',
-    ]
+    ],
+
+    # Public
+    [
+        'verb' => 'get',
+        'path' => '/',
+        'controller' => LandingController::class,
+        'method' => 'landing',
+    ],
 ];

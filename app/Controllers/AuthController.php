@@ -19,7 +19,7 @@ class AuthController extends Controller
         if (property_exists($user, 'password') && password_verify($data['password'], $user->password)) {
             $_SESSION['auth'] = get_object_vars($user);
 
-            return $this->redirect('pages/home');
+            return $this->redirect('/home');
         }
 
         return $this->render('pages/auth/login', ['message' => 'Hum, aucun compte trouvé pour ces identifiants 😕']);
@@ -38,14 +38,18 @@ class AuthController extends Controller
             unset($data['password_confirmation']);
 
             $data['password'] = password_hash($data['password'], PASSWORD_BCRYPT);
-
             $user = new User;
+
             if ($user->create($data) instanceof PDOException) {
                 return $this->render('pages/auth/register', ['message' => "Ce nom d'utilisateur / email est déjà pris, retente ta chance 🤔"]);
             }
+
+            $_SESSION['auth'] = get_object_vars($user->where(['email', $data['email']])->first());
+
+            return $this->redirect('/home');
         }
 
-        return $this->redirect('/');
+        return $this->render('pages/auth/register', ['message' => "Les mots de passe ne correspondent pas, retente ta chance 🤔"]);
     }
 
     public function showRegisterForm()
@@ -55,5 +59,8 @@ class AuthController extends Controller
 
     public function logout()
     {
+        session_destroy();
+
+        return $this->redirect('/login');
     }
 }

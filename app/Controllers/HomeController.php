@@ -4,8 +4,12 @@ namespace App\Controllers;
 
 class HomeController extends Controller
 {
-    public function home()
+    public function show()
     {
-        return $this->render('pages/home');
+        if ($this->isAuth()) {
+            return $this->render('pages/home', ['user' => $this->toVue($_SESSION['auth'])]);
+        }
+
+        return $this->redirect('/login');
     }
 }

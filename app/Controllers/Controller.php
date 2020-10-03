@@ -9,6 +9,26 @@ class Controller
 {
     protected $rendered;
 
+    public function json($result): Response
+    {
+        return $this->response(json_encode($result));
+    }
+
+    public function redirect(string $url)
+    {
+        return new \Laminas\Diactoros\Response\RedirectResponse($url);
+    }
+
+    protected function isAuth()
+    {
+        return array_key_exists('auth', $_SESSION);
+    }
+
+    protected function toVue($item): string
+    {
+        return htmlspecialchars(json_encode($item));
+    }
+
     protected function getBody(ServerRequestInterface $request): ?array
     {
         return $request->getParsedBody();
@@ -27,16 +47,6 @@ class Controller
         ob_end_clean();
 
         return $this->response($rendered);
-    }
-
-    public function json($result): Response
-    {
-        return $this->response(json_encode($result));
-    }
-
-    public function redirect(string $url)
-    {
-        return new \Laminas\Diactoros\Response\RedirectResponse($url);
     }
 
     private function response(string $rendered): Response
