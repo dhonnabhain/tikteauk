@@ -7,14 +7,6 @@
             Tikteauk
             <a href="/login" class="text-indigo-500">Se connecter</a>
         </div>
-
-        
-        <!-- <l-header>
-        </l-header> -->
-        <!-- <p-landing>
-        </p-landing> -->
-
-
     </main>
 
     <script src="js/app.js"></script>
