@@ -14,9 +14,11 @@ class AuthController extends Controller
         $data = $this->getBody($request);
 
         $user = new User();
-        $user->where(['email', $data['email']])->first();
+        $user->where(['email', strtolower($data['email'])])->first();
 
         if (property_exists($user, 'password') && password_verify($data['password'], $user->password)) {
+            unset($user->password);
+
             $_SESSION['auth'] = get_object_vars($user);
 
             return $this->redirect('/home');
@@ -44,7 +46,10 @@ class AuthController extends Controller
                 return $this->render('pages/auth/register', ['message' => "Ce nom d'utilisateur / email est déjà pris, retente ta chance 🤔"]);
             }
 
-            $_SESSION['auth'] = get_object_vars($user->where(['email', $data['email']])->first());
+            $fetched = $user->where(['email', $data['email']])->first();
+            unset($user->password);
+
+            $_SESSION['auth'] = get_object_vars($fetched);
 
             return $this->redirect('/home');
         }
