@@ -7,10 +7,14 @@ use Symfony\Component\String\Inflector\EnglishInflector;
 
 abstract class Model
 {
+    protected array $hidden = [];
     private string $table;
+    private $stmt;
     private string $query;
     private array $columns = [];
     private array $binds = [];
+    private array $wheresColumns = [];
+    private array $wheresBinds = [];
     private array $wheres = [];
 
     public function __construct()
@@ -23,7 +27,7 @@ abstract class Model
         $this->query = "INSERT INTO $this->table (%columns%) VALUES (%binds%)";
 
         try {
-            $exec = $this->prepareColumnsAndBinds($fields)
+            $exec = $this->prepareBindings($fields)
                 ->setColumnsAndBinds()
                 ->run($fields);
 
@@ -37,19 +41,20 @@ abstract class Model
 
     public function all()
     {
-        $query = $GLOBALS['connection']->prepare("SELECT * FROM $this->table");
-        $query->execute();
+        $this->query = "SELECT * FROM $this->table";
 
-        return $query->fetchAll(PDO::FETCH_ASSOC);
+        return $this->run()
+            ->fetchAll(PDO::FETCH_ASSOC);
     }
 
     public function fetch(): array
     {
-        $whereClause = $this->prepareWhere();
-        $query = $GLOBALS['connection']->prepare("SELECT * FROM $this->table " . $whereClause);
-        $query->execute();
+        $this->query = "SELECT * FROM $this->table WHERE %wheres%";
 
-        return $query->fetchAll(PDO::FETCH_ASSOC);
+        return $this->prepareBindings($this->wheres, 'wheres')
+            ->setColumnsEqualsBinds('%wheres%', 'wheresColumns', 'wheresBinds')
+            ->run()
+            ->fetchAll(PDO::FETCH_ASSOC);
     }
 
     public function first(): self
@@ -61,9 +66,28 @@ abstract class Model
         return $this;
     }
 
+    public function update(array $fields)
+    {
+        $this->query = "UPDATE $this->table SET %columns% WHERE %wheres%";
+
+        try {
+            $this->prepareBindings($fields)
+                ->prepareBindings($this->wheres, 'wheres')
+                ->setColumnsEqualsBinds()
+                ->setColumnsEqualsBinds('%wheres%', 'wheresColumns', 'wheresBinds')
+                ->run($fields);
+
+            $this->cleanup();
+
+            return $this;
+        } catch (\Exception $e) {
+            return $e;
+        }
+    }
+
     public function where(array $condition): self
     {
-        array_push($this->wheres, $condition);
+        $this->wheres[$condition[0]] = $condition[1];
 
         return $this;
     }
@@ -81,6 +105,21 @@ abstract class Model
         }
     }
 
+    public function prepareSet($fields): ?string
+    {
+        if (count($fields) > 0) {
+            $last = end($fields);
+            $setClause = "SET ";
+
+            foreach ($fields as $field) {
+                $lastChar = $field[0] === $last ? '' : ', ';
+                $setClause .= "$field[0] = '$field[1]'" . $lastChar;
+            }
+
+            return $setClause;
+        }
+    }
+
     private function resolveTable(): void
     {
         $namespace = get_class($this);
@@ -89,11 +128,14 @@ abstract class Model
         $this->table = strtoupper((new EnglishInflector)->pluralize($classname)[0]);
     }
 
-    private function prepareColumnsAndBinds(array $fields): self
+    private function prepareBindings(array $fields, string $prefix = ''): self
     {
-        foreach (array_keys($fields) as $col) {
-            array_push($this->columns, $col);
-            array_push($this->binds, ":$col");
+        $columnsProperty = $this->bindPropertyResolver($prefix, 'columns');
+        $bindsProperty = $this->bindPropertyResolver($prefix, 'binds');
+
+        foreach (array_keys($fields) as $item) {
+            array_push($this->{$columnsProperty}, $item);
+            array_push($this->{$bindsProperty}, $this->buildBindName($prefix, $item));
         }
 
         return $this;
@@ -107,15 +149,36 @@ abstract class Model
         return $this;
     }
 
-    private function run(array $fields = [])
+    private function setColumnsEqualsBinds(string $toReplace = '%columns%', string $property = 'columns', string $binds = 'binds'): self
     {
-        $stmt = $GLOBALS['connection']->prepare($this->query);
+        $clause = '';
+        $lastItem = end($this->{$property});
 
-        foreach ($this->binds as $bind) {
-            $stmt->bindParam($bind, $fields[preg_replace('/:/', '', $bind)]);
+        foreach ($this->{$property} as $idx => $col) {
+            $glue = $lastItem === $col ? ' ' : $this->glueDefiner($toReplace);
+            $clause .= $col . ' = ' . $this->{$binds}[$idx] . $glue;
         }
 
-        return $stmt->execute();
+        $this->query = str_replace($toReplace, $clause, $this->query);
+
+        return $this;
+    }
+
+    private function run(array $fields = [])
+    {
+        $this->stmt = $GLOBALS['connection']->prepare($this->query);
+
+        foreach ($this->binds as $bind) {
+            $this->stmt->bindParam($bind, $fields[preg_replace('/:/', '', $bind)]);
+        }
+
+        foreach ($this->wheresBinds as $bind) {
+            $this->stmt->bindParam($bind, $this->wheres[preg_replace('/:wheres_/', '', $bind)]);
+        }
+
+        $this->stmt->execute();
+
+        return $this->stmt;
     }
 
     private function cleanup(): void
@@ -127,8 +190,41 @@ abstract class Model
     {
         if (count($fetched) > 0) {
             foreach ($fetched[0] as $attr => $item) {
-                $this->{$attr} = $item;
+                if (!in_array($attr, $this->hidden)) {
+                    $this->{$attr} = $item;
+                }
             }
+        }
+    }
+
+    private function bindPropertyResolver(string $prefix, string $item)
+    {
+        $hasPrefix = $prefix !== '';
+        $lastPart = $hasPrefix ? ucfirst($item) : $item;
+
+        return $prefix . $lastPart;
+    }
+
+    private function buildBindName(string $prefix, string $item)
+    {
+        $hasPrefix = $prefix !== '';
+        $lastPart = $hasPrefix ? "_$item" : $item;
+
+        return ':' . $prefix . $lastPart;
+    }
+
+    private function glueDefiner(string $type)
+    {
+        $type = preg_replace('/%/', '', $type);
+
+        switch ($type) {
+            case 'wheres':
+                return ' AND ';
+                break;
+
+            default:
+                return ', ';
+                break;
         }
     }
 }
