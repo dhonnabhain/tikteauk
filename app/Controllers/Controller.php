@@ -14,14 +14,25 @@ class Controller
         return $this->response(json_encode($result));
     }
 
-    public function redirect(string $url)
+    public function redirect(string $url, array $toPutInSession = [])
     {
+        foreach ($toPutInSession as $key => $item) {
+            $_SESSION[$key] = $item;
+        }
+
         return new \Laminas\Diactoros\Response\RedirectResponse($url);
     }
 
     protected function isAuth()
     {
         return array_key_exists('auth', $_SESSION);
+    }
+
+    protected function redirectIfNotAuth()
+    {
+        if ($this->isAuth()) {
+            return $this->redirect('/login');
+        }
     }
 
     protected function toVue($item): string
