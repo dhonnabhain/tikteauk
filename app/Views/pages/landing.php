@@ -2,10 +2,6 @@
 <?php include(__DIR__ . '/../components/header.php') ?>
 
 <body class="bg-gray-300 w-screen h-screen">
-    <!--
-  Tailwind UI components require Tailwind CSS v1.8 and the @tailwindcss/ui plugin.
-  Read the documentation to get started: https://tailwindui.com/documentation
--->
     <div class="relative bg-white overflow-hidden h-full">
         <div class="max-w-screen-xl mx-auto">
             <div class="relative z-10 pb-8 bg-white sm:pb-16 md:pb-20 lg:pb-28 xl:pb-32">
