@@ -1,5 +1,6 @@
 <?php
 
+use App\Controllers\AccountController;
 use App\Controllers\AuthController;
 use App\Controllers\HomeController;
 use App\Controllers\LandingController;
@@ -47,15 +48,35 @@ return [
     ],
     [
         'verb' => 'get',
-        'path' => '/profil',
-        'controller' => HomeController::class,
-        'method' => 'show',
-    ],
-    [
-        'verb' => 'get',
         'path' => '/posts/all',
         'controller' => PostController::class,
         'method' => 'index',
+    ],
+
+    # Account
+    [
+        'verb' => 'get',
+        'path' => '/account',
+        'controller' => AccountController::class,
+        'method' => 'show',
+    ],
+    [
+        'verb' => 'post',
+        'path' => '/account/general',
+        'controller' => AccountController::class,
+        'method' => 'updateGeneral',
+    ],
+    [
+        'verb' => 'post',
+        'path' => '/account/password',
+        'controller' => AccountController::class,
+        'method' => 'updatePassword',
+    ],
+    [
+        'verb' => 'post',
+        'path' => '/account/bio',
+        'controller' => AccountController::class,
+        'method' => 'updateBio',
     ],
 
     # Public

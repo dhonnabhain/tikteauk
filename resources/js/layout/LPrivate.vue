@@ -42,7 +42,7 @@
                   hidden: isMobileNavbarOpen,
                   block: !isMobileNavbarOpen,
                 }"
-                class="block h-6 w-6"
+                class="h-6 w-6"
                 stroke="currentColor"
                 fill="none"
                 viewBox="0 0 24 24"
@@ -59,7 +59,7 @@
                   block: isMobileNavbarOpen,
                   hidden: !isMobileNavbarOpen,
                 }"
-                class="hidden h-6 w-6"
+                class="h-6 w-6"
                 stroke="currentColor"
                 fill="none"
                 viewBox="0 0 24 24"
@@ -79,7 +79,11 @@
       <LMobileNavbar :user="user" :is-open="isMobileNavbarOpen" />
     </nav>
 
-    <slot />
+    <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
+      <div class="px-4 py-8 sm:px-0">
+        <slot />
+      </div>
+    </div>
   </div>
 </template>
 
